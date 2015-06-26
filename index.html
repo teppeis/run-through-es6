@@ -3,6 +3,11 @@
   <head>
     <title>Run through ES6</title>
     <meta charset="utf-8">
+    <script>
+      if (location.protocol !== 'https:' && location.hostname === 'teppeis.github.io') {
+        location.href = "https:" + location.href.substring(location.protocol.length);
+      }
+    </script>
     <style>
       @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
       @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
