@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Run through ES6</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body {
+        font-family: sans-serif;
+      }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .inverse {
+        background: #272822;
+        color: #777872;
+        text-shadow: 0 0 20px #333;
+      }
+      .inverse h1, .inverse h2 {
+        color: #f3f3f3;
+        line-height: 0.8em;
+      }
+      .remark-code, .remark-inline-code {
+        font-family: 'Ubuntu Mono', monospace;
+      }
+      .remark-code {
+        font-size: 24px;
+      }
+      .remark-slide-content {
+        font-size: 24px;
+      }
+      .remark-slide-content h3 {
+        margin-bottom: -30px;
+      }
+      .title-page h1 {
+        font-size: 140px;
+      }
+      .avatar {
+        width: 32px;
+        vertical-align: top;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-page
+
+# Run through ES6
+
+### 2015/06/27 #tng16
+### by @teppeis
+
+---
+# Hello!
+
+* Teppei Sato
+* <a href="https://twitter.com/teppeis">@teppeis</a> <img src="https://secure.gravatar.com/avatar/b593af919ac846342f62d33b32beef2a?s=32" class="avatar">
+* Cybozu, Inc. / kintone
+
+---
+# My Favorite ES6
+
+* Module
+* Iterator
+* Destructuring
+
+---
+class: wdpress
+background-image: url(wdpress87.jpg)
+
+???
+
+WEB+DB PRESS Vol.87でES6特集を書きました。
+
+---
+# ECMAScript
+
+* いわゆるJavaScriptが準拠している言語仕様
+* TC39 (Ecma Technical Committee) にて策定
+* Ecma Internationalで標準化
+* ISO, JISでも標準化している
+
+---
+# ECMAScript 6
+
+* 2015/6/17にEcma Internationalで標準化（祝！）
+    * ES3から16年、ES5から6年...
+* 特徴
+    * モダンなシンタックス
+    * 大規模開発に耐える
+    * コンパイルターゲットとしてのJS
+    * 後方互換性が高い
+    * 今すぐ動かせる
+
+---
+# ES6? ES2015?
+
+* 正式名称は "Standard ECMA-262 6th Edition, ECMAScript 2015 Language Specification" なのでECMAScript 2015/ES2015が正しそう
+* ただし先に "ES6" が浸透してしまったのでそのまま使われているのが現状
+* 次バージョンからは年次リリースになるためES2016に統一されそう？
+* 別途ブログを書いたので参照
+    * [ES6 or ES2015? | Cybozu Inside Out](http://developer.cybozu.co.jp/tech/?p=9081)
+
+---
+# Can I use ES6?
+
+* 各環境（ブラウザ/Node/トランスパイラ）の実装状況は[ES6 compat-table](https://kangax.github.io/compat-table/es6/)で確認できる
+    * モダンブラウザなら既に半分ぐらい実装済み
+* 非対応の機能や環境ではトランスパイラ、ポリフィルを使う
+    * Babel, Traceurが有名
+    * トランスパイルする機能は要選択
+
+---
+class: center, middle, inverse
+
+# ES6 Features
+
+---
+# ES6 Features
+
+* New Syntax
+* New Global Objects
+* Improvements of Existing Classes
+
+---
+class: center, middle, inverse
+
+# New Syntax
+---
+# New Syntax
+
+* Class
+* Module
+* Arrow Function
+* Enhanced Object Literal
+* Block Scope
+* Default Params
+* Rest Params
+* Spread Operator
+* Destructuring
+* Iterator
+* Generator
+* Template Literal
+
+---
+# Class
+
+```js
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+
+  greet() {
+    console.log("Hello, I'm " + this.name);
+  }
+
+  static create(name) {
+    return new Person(name);
+  }
+}
+```
+
+---
+### Class
+# Extend
+
+```js
+class Author extends Person {
+  constructor(name, book) {
+    super(name);
+    this.book = book;
+  }
+
+  greet() {
+    super.greet();
+    console.log("I wrote " + this.book);
+  }
+}
+```
+
+---
+### Class
+# Extend Builtins
+
+```js
+class MyArray extends Array {
+  clear() {
+    ...
+  }
+}
+
+class MyError extends Error {
+  ...
+}
+```
+---
+# Module
+
+```js
+// foo.js
+export default function() {
+  console.log("foo!");
+};
+
+// bar.js
+export var bar1 = "bar!";
+export function bar2() {}
+export class Bar3 {}
+
+// import.js
+import f from "./foo";
+import {bar1, bar2, Bar3} from "./bar";
+f(); // "foo!"
+console.log(bar1); // "bar!"
+```
+
+---
+# Arrow Function
+
+```js
+var add = (a, b) => {
+  return a + b;
+};
+
+var square = n => n * n;
+
+[1, 2, 3].filter(n => n % 2 === 0).map(n => n * n);
+```
+
+---
+### Arrow Function
+# Lexical `this`
+
+```js
+
+var john = {
+  name: "John",
+  helloLater: function() {
+    setTimeout(() => {
+      console.log("Hello, I'm " + this.name);
+    }, 1000);
+  }
+}
+```
+
+---
+layout: true
+
+### Enhanced Object Literal
+
+---
+# Short hand
+
+```js
+var foo = 0, bar = 1;
+var obj = {foo, bar};
+
+// same as:
+//
+// var obj = {foo: foo, bar: bar};
+```
+
+---
+## Computed Property
+
+```js
+var key = "foo";
+var obj = {
+  [key]: 0,
+  [key + "_bar"]: 1
+};
+```
+
+---
+## Method Definition
+
+```js
+var counter = {
+  count: 0,
+  increment() {
+    this.count++;
+  }
+};
+```
+
+---
+layout: false
+
+### Block Scope
+# `let`
+
+```js
+function foo() {
+  let bar = 'outer';
+  if (true) {
+    let bar = 'inner';
+  }
+  return bar;
+}
+
+console.log(foo());
+// 'outer'
+```
+
+---
+### Block Scope
+# `const`
+
+```js
+const foo = 0;
+const foo = 1; // Error!
+foo = 100; // Error!
+```
+
+---
+### Block Scope
+# `let` within For Loop
+
+```js
+for (var i = 0; i < 5; i++) {
+  setTimeout(function() {
+    console.log(i);
+  }, i * 1000);
+}
+// 5 5 5 5 5
+```
+
+```js
+for (let i = 0; i < 5; i++) {
+  setTimeout(function() {
+    console.log(i);
+  }, i * 1000);
+}
+// 1 2 3 4 5
+```
+
+---
+# Default Params
+
+```js
+function add(a = 1, b = 2) {
+  return a + b;
+}
+add(); // 1 + 2 = 3
+add(0); // 0 + 2 = 2
+add(0, 0); // 0 + 0 = 0
+```
+
+---
+# Rest Params
+
+```js
+function foo(first, second, ...rest) {
+  console.log("first:", first);
+  console.log("second:", second);
+  console.log("rest:", rest);
+}
+foo(1, 2, 3, 4, 5);
+// first: 1
+// second: 2
+// rest: [3, 4, 5]
+```
+
+---
+# Spread Operator
+
+```js
+var nums = [1, 2, 3];
+Math.max(...nums); // 3
+
+// same as:
+//
+// Math.max(1, 2, 3);
+//
+// or
+//
+// Math.max.apply(null, nums);
+```
+
+---
+### Destructuring
+# Array
+
+```js
+var date = /(\d{4})(\d{2})(\d{2})/.exec("20151231");
+// [2015, 12, 31]
+
+var [year, month, day] = date;
+console.log(year, month, day);
+// 2015 12 31
+```
+
+```js
+// swapping
+var x = 1, y = 2;
+[x, y] = [y, x]
+console.log(x, y);
+// 2 1
+```
+
+---
+### Destructuring
+# Object
+
+```js
+var {name: a, age: b} = {name: "Bob", age: 20};
+console.log(a, b); // "Bob" 20
+
+// short hand
+var {name, age} = {name: "Bob", age: 20};
+console.log(name, age); // "Bob" 20
+
+// default
+var {name, age = 18} = {name: "Bob"};
+console.log(name, age); // "Bob" 18
+
+// nested
+var {foo: {bar: [, x]}} = {foo: {bar: [1, 2, 3]}};
+console.log(x); // 2
+```
+
+---
+### Destructuring
+# in Function Params (like Keyword Params)
+
+```js
+function foo({a, b}) {
+  console.log(a, b);
+}
+
+foo({a: 1, b: 2});
+// 1 2
+```
+
+---
+# Iterator
+
+```js
+var nums = [1, 2, 3];
+
+var iter = nums[Symbol.iterator]();
+console.log(iter.next()); // {value: 1, done: false}
+console.log(iter.next()); // {value: 2, done: false}
+console.log(iter.next()); // {value: 3, done: false}
+console.log(iter.next()); // {value: undefined, done: true}
+
+for (let n of nums) {
+  console.log(n);
+}
+// 1 2 3
+```
+
+---
+# Generator
+
+```js
+function *generator() {
+  yield 1;
+  yield 2;
+  return 3;
+}
+
+var g = generator();
+console.log(g.next()); // {value: 1, done: false}
+console.log(g.next()); // {value: 2, done: false}
+console.log(g.next()); // {value: 3, done: true}
+
+for (let n of generator()) {
+  console.log(n);
+}
+// 1
+// 2
+```
+
+---
+# Template Literal
+
+```js
+// embed
+var name = "Bob";
+console.log(`Hello, ${name}.`); // "Hello, Bob."
+
+// multiple line text
+var text = `line 1
+line 2
+line 3`;
+
+// tagged template
+el.innerHTML = escapeHtml`<p>Hello, ${name}</p>`;
+function escapeHtml(templates, ...values) {
+  // templates: ["<p>Hello, ", "${name}</p>"]
+  // values: ["Bob"]
+  ...
+}
+```
+
+---
+class: center, middle, inverse
+
+# New Global Objects
+
+---
+# New Global Objects
+
+* Promise
+* Map/Set
+* Typed Arrays
+* Symbol
+* Proxy, Reflect
+
+---
+# Promise
+
+```js
+function wait(time) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve("wait: " + time);
+    }, time);
+  });
+}
+
+wait(1000).then(value => {
+  console.log(value); // "wait: 1000"
+}).then(value => {
+  console.log(value); // undefined
+});
+```
+
+---
+# Map/Set
+
+```js
+var key1 = {}, key2 = {};
+var map = new Map();
+map.set(key1, "value1");
+map.set(key2, "value2");
+map.get(key1); // "value1"
+```
+
+```js
+var set = new Set();
+set.add("value1");
+set.add("value2");
+console.log(set.size); // 2
+set.add("value1");
+console.log(set.size); // 2
+```
+
+---
+# WeakMap/WeakSet
+
+```js
+const privateNames = new WeakMap();
+
+export class Foo {
+  constructor(name) {
+    privateNames.set(this, name);
+  }
+  getName() {
+    return privateNames.get(this);
+  }
+}
+```
+
+---
+# Typed Arrays
+
+```js
+// typed array
+var u16 = new Uint16Array(2);
+console.log(u16.byteLength); // 4
+u16[0] = 0x00ff;
+u16[1] = 0xffff;
+console.log(u16); // [255, 65535]
+
+var u8 = new Uint8Array(u16.buffer);
+console.log(u8.byteLength); // 4
+console.log(u8); // [255, 0, 255, 255]
+
+// data view
+var view = new DataView(u8.buffer);
+view.setUint8(0, 0x0f);
+console.log(u8); // [15, 0, 255, 255]
+```
+
+---
+# Symbol
+
+```js
+var sym1 = Symbol();
+console.log(typeof sym1); // "symbol"
+console.log(sym1 === Symbol()); // false
+
+var sym2 = Symbol("foo");
+sym2.toString(); // "Symbol(foo)"
+console.log(sym2 === Symbol("foo")); // false
+
+// a usage
+const EventType = {
+  OPEN: Symbol('open'),
+  CLOSE: Symbol('close')
+};
+```
+
+---
+### Symbol
+# Well-known Symbol
+
+```js
+var nums = [1, 2, 3];
+var iter = nums[Symbol.iterator]();
+```
+
+```js
+var obj = {
+  [Symbol.toStringTag]: "Foo!"
+}
+console.log(String(obj));
+// "[object Foo!]"
+```
+
+---
+# Proxy
+
+```js
+var handler = {
+  get(target, key, receiver) {
+    // target: obj
+    // receiver: proxy
+    console.log('Proxy GET:', key);
+    return target[key];
+  }
+};
+
+var obj = {foo: 1};
+var proxy = new Proxy(obj, handler);
+console.log(proxy.foo);
+// Proxy GET: "foo"
+// 1
+console.log(proxy.bar);
+// Proxy GET: "bar"
+// undefined
+```
+
+---
+# Reflect
+
+```js
+var handler = {
+  get(target, key, receiver) {
+    // target: obj
+    // receiver: proxy
+    console.log('Proxy GET:', key);
+    return Reflect.get(target, key, receiver);
+  }
+};
+```
+
+---
+class: center, middle, inverse
+
+# Improvement of Existing Classes
+
+---
+# Improvement of Existing Classes
+
+* Object
+* Array
+* String
+* RegExp
+* Number
+* Math
+
+---
+### Object
+# `Object.assign`
+
+```js
+var target = {a: 1, b: 2};
+var s1 = {b: 3, c: 4};
+var s2 = {c: 5, d: 6};
+var ret = Object.assign(target, s1, s2);
+console.log(target); // {a: 1, b: 3, c: 5, d: 6}
+console.log(ret === target); // true
+
+// clone
+var clone = Object.assign({}, s1);
+console.log(clone); // {b: 3, c: 4}
+
+// shallow copy (not deep)
+var s3 = {x: {y: 1}};
+var clone3 = Object.assign({}, s3);
+console.log(s3.x === clone3.x); // true
+```
+
+---
+# Array
+
+```js
+// new methods
+var args = Array.from(arguments);
+console.log(args instanceof Array); // true
+
+[1, 2, 3, 4, 5].copyWithin(3, 0); // [1, 2, 3, 1, 2]
+[0, 0, 0].fill(3); // [3, 3, 3]
+[1, 2, 3].find(n => n === 3); // 3
+[1, 2, 3].findIndex(x => x === 2); // 1
+```
+
+---
+# Unicode (String and RegExp)
+
+```js
+// surrogate pair charactor (same as ES5)
+console.log("𩸽".length); // 2
+
+// new String methods for code point
+"𩸽".codePointAt(0).toString(16); // "29e3d"
+String.fromCodePoint(0x29e3d); // "𩸽"
+
+// new Unicode literal
+console.log("\u{29e3d}"); // "𩸽"
+
+// new String iterator for code points
+console.log([..."𩸽"].length); // 1
+
+// new RegExp flag "u"
+console.log("𩸽".match(/./u)); // ["𩸽"]
+```
+
+---
+# String
+
+```js
+// new methods
+"abcde".startsWith("ab"); // true
+"abcde".endsWith("de"); // true
+"abcde".includes("bcd"); // true
+"abc".repeat(3); // "abcabcabc"
+```
+
+---
+# Number
+
+* Binary literal: `0b10`
+* Octal literal: `0o10`
+* `Number.isNaN(n)`
+* `Number.isFinite(n)`
+* `Number.isInteger(n)`
+* `Number.isSafeInteger(n)`
+* `Number.MAX_SAFE_INTEGER`
+* `Number.MIN_SAFE_INTEGER`
+* `Number.EPSILON`
+
+---
+### Number
+# `Number.isNaN`
+
+```js
+// legacy isNaN
+console.log(isNaN(1)); // false
+console.log(isNaN(NaN)); // true
+console.log(isNaN("foo")); // true (weird...)
+
+// new method
+console.log(Number.isNaN("foo")); // false
+```
+
+---
+# Math
+
+```js
+// many new arithmetic functions
+Math.log10(2); // 0.3010299956639812
+Math.tanh(1); // 0.7615941559557649
+
+// C-like 32-bit multiplication
+Math.imul(0xffffffff, 5); // -5
+```
+
+---
+class: center, middle, inverse
+
+# One more thing...
+
+---
+# Tail Call Optimization
+
+```js
+function factorial(n) {
+  function factorial_(n, acc) {
+    if (n <= 1) return acc;
+    return factorial_(n - 1, n * acc);
+  }
+  return factorial_(n, 1);
+}
+
+// doesn't cause stack overflow
+factorial(100000);
+```
+
+---
+class: center, middle, inverse
+
+# Thanks!
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
